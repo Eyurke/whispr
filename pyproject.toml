@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "whispr"
+version = "0.1.0"
+description = "Local push-to-talk dictation for Windows - an open, offline Wispr Flow alternative powered by Whisper."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Evgeny Yurkevich" }]
+dependencies = [
+    "faster-whisper>=1.1.0",
+    "sounddevice>=0.5.0",
+    "keyboard>=0.13.5",
+    "pystray>=0.19.5",
+    "Pillow>=10.0.0",
+    "pywin32>=306",
+    "numpy",
+]
+
+[project.scripts]
+whispr = "whispr.app:main"
+
+[tool.setuptools]
+packages = ["whispr"]
+
+[tool.pytest.ini_options]
+markers = [
+    "e2e: end-to-end tests that need audio/display/model downloads (skipped on CI)",
+]

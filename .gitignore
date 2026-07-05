@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+
+# Test / tooling caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# Local user data (never commit)
+*.wav
+*.db
+models/
+
+# OS
+Thumbs.db
+Desktop.ini
