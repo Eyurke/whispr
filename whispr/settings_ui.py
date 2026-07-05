@@ -8,7 +8,7 @@ from tkinter import messagebox, ttk
 from .audio import list_input_devices
 from .config import Config
 
-HOTKEY_CHOICES = ["ctrl+win", "ctrl+alt", "alt+win", "ctrl+shift", "f8", "f9", "scroll lock"]
+HOTKEY_CHOICES = ["ctrl+win", "left alt", "right alt", "ctrl+alt", "alt+win", "ctrl+shift", "f8", "f9", "scroll lock"]
 MODEL_CHOICES = ["tiny", "base", "small", "medium", "large-v3", "distil-large-v3"]
 MODEL_HINT = "tiny/base = fastest · small = best balance · large-v3 = best accuracy (slower)"
 LANGUAGE_CHOICES = ["auto", "en", "ru", "uk", "de", "es", "fr", "it", "pt", "pl", "nl", "ja", "zh", "ko"]
@@ -43,26 +43,32 @@ class SettingsWindow:
         dict_frame = ttk.LabelFrame(body, text="Dictation", padding=8)
         dict_frame.pack(fill="x", **pad)
 
-        ttk.Label(dict_frame, text="Hold-to-talk hotkey:").grid(row=0, column=0, sticky="w")
+        ttk.Label(dict_frame, text="Dictation hotkey:").grid(row=0, column=0, sticky="w")
         self.hotkey_var = tk.StringVar(value=cfg.hotkey)
         ttk.Combobox(dict_frame, textvariable=self.hotkey_var, values=HOTKEY_CHOICES, width=18).grid(row=0, column=1, sticky="w", padx=8)
 
+        self.mode_var = tk.StringVar(value=cfg.hotkey_mode)
+        mode_row = ttk.Frame(dict_frame)
+        mode_row.grid(row=1, column=0, columnspan=2, sticky="w", pady=(6, 0))
+        ttk.Radiobutton(mode_row, text="Hold to talk, release to finish", variable=self.mode_var, value="hold").pack(side="left")
+        ttk.Radiobutton(mode_row, text="Tap to start, tap again to finish", variable=self.mode_var, value="toggle").pack(side="left", padx=(12, 0))
+
         self.tap_lock_var = tk.BooleanVar(value=cfg.tap_lock_enabled)
         ttk.Checkbutton(
-            dict_frame, text="Quick tap locks hands-free recording (tap again to stop)",
+            dict_frame, text="(Hold mode) quick tap locks hands-free recording",
             variable=self.tap_lock_var,
-        ).grid(row=1, column=0, columnspan=2, sticky="w", pady=(6, 0))
+        ).grid(row=2, column=0, columnspan=2, sticky="w", pady=(6, 0))
 
-        ttk.Label(dict_frame, text="Microphone:").grid(row=2, column=0, sticky="w", pady=(6, 0))
+        ttk.Label(dict_frame, text="Microphone:").grid(row=3, column=0, sticky="w", pady=(6, 0))
         self._devices = list_input_devices()
         device_names = [name for _idx, name in self._devices]
         current = next((name for idx, name in self._devices if idx == cfg.mic_device), device_names[0])
         self.mic_var = tk.StringVar(value=current)
-        ttk.Combobox(dict_frame, textvariable=self.mic_var, values=device_names, width=38, state="readonly").grid(row=2, column=1, sticky="w", padx=8, pady=(6, 0))
+        ttk.Combobox(dict_frame, textvariable=self.mic_var, values=device_names, width=38, state="readonly").grid(row=3, column=1, sticky="w", padx=8, pady=(6, 0))
 
-        ttk.Label(dict_frame, text="Language:").grid(row=3, column=0, sticky="w", pady=(6, 0))
+        ttk.Label(dict_frame, text="Language:").grid(row=4, column=0, sticky="w", pady=(6, 0))
         self.lang_var = tk.StringVar(value=cfg.language)
-        ttk.Combobox(dict_frame, textvariable=self.lang_var, values=LANGUAGE_CHOICES, width=18).grid(row=3, column=1, sticky="w", padx=8, pady=(6, 0))
+        ttk.Combobox(dict_frame, textvariable=self.lang_var, values=LANGUAGE_CHOICES, width=18).grid(row=4, column=1, sticky="w", padx=8, pady=(6, 0))
 
         # --- Model -----------------------------------------------------
         model_frame = ttk.LabelFrame(body, text="Speech model (runs locally)", padding=8)
@@ -79,19 +85,21 @@ class SettingsWindow:
         self.caps_var = tk.BooleanVar(value=cfg.capitalize_sentences)
         self.space_var = tk.BooleanVar(value=cfg.trailing_space)
         self.commands_var = tk.BooleanVar(value=cfg.spoken_commands)
+        self.period_var = tk.BooleanVar(value=cfg.ensure_ending_punctuation)
         ttk.Checkbutton(text_frame, text="Remove filler words (um, uh, hmm…)", variable=self.fillers_var).grid(row=0, column=0, sticky="w")
         ttk.Checkbutton(text_frame, text="Capitalize sentences", variable=self.caps_var).grid(row=1, column=0, sticky="w")
-        ttk.Checkbutton(text_frame, text="Append trailing space (chain dictations)", variable=self.space_var).grid(row=2, column=0, sticky="w")
-        ttk.Checkbutton(text_frame, text='Spoken commands ("new line", "new paragraph")', variable=self.commands_var).grid(row=3, column=0, sticky="w")
+        ttk.Checkbutton(text_frame, text="End dictations with punctuation (adds '.' if missing)", variable=self.period_var).grid(row=2, column=0, sticky="w")
+        ttk.Checkbutton(text_frame, text="Append trailing space (chain dictations)", variable=self.space_var).grid(row=3, column=0, sticky="w")
+        ttk.Checkbutton(text_frame, text='Spoken commands ("new line", "new paragraph")', variable=self.commands_var).grid(row=4, column=0, sticky="w")
 
-        ttk.Label(text_frame, text="Dictionary (names/terms to spell correctly, one per line):").grid(row=4, column=0, sticky="w", pady=(8, 2))
+        ttk.Label(text_frame, text="Dictionary (names/terms to spell correctly, one per line):").grid(row=5, column=0, sticky="w", pady=(8, 2))
         self.dict_text = tk.Text(text_frame, width=48, height=4, font=("Segoe UI", 9))
-        self.dict_text.grid(row=5, column=0, sticky="we")
+        self.dict_text.grid(row=6, column=0, sticky="we")
         self.dict_text.insert("1.0", "\n".join(cfg.dictionary or []))
 
-        ttk.Label(text_frame, text="Replacements (one per line, e.g.  gonna -> going to):").grid(row=6, column=0, sticky="w", pady=(8, 2))
+        ttk.Label(text_frame, text="Replacements (one per line, e.g.  gonna -> going to):").grid(row=7, column=0, sticky="w", pady=(8, 2))
         self.repl_text = tk.Text(text_frame, width=48, height=4, font=("Segoe UI", 9))
-        self.repl_text.grid(row=7, column=0, sticky="we")
+        self.repl_text.grid(row=8, column=0, sticky="we")
         self.repl_text.insert("1.0", "\n".join(f"{k} -> {v}" for k, v in (cfg.replacements or {}).items()))
 
         # --- System ----------------------------------------------------
@@ -123,6 +131,7 @@ class SettingsWindow:
             messagebox.showerror("Whispr", "Hotkey cannot be empty.", parent=self.win)
             return
         self.cfg.hotkey = hotkey
+        self.cfg.hotkey_mode = self.mode_var.get()
         self.cfg.tap_lock_enabled = self.tap_lock_var.get()
         self.cfg.language = self.lang_var.get().strip() or "auto"
         self.cfg.model = self.model_var.get().strip() or "small"
@@ -133,6 +142,7 @@ class SettingsWindow:
         self.cfg.capitalize_sentences = self.caps_var.get()
         self.cfg.trailing_space = self.space_var.get()
         self.cfg.spoken_commands = self.commands_var.get()
+        self.cfg.ensure_ending_punctuation = self.period_var.get()
         self.cfg.dictionary = [
             line.strip() for line in self.dict_text.get("1.0", "end").splitlines() if line.strip()
         ]

@@ -89,3 +89,28 @@ def test_full_cycle_can_repeat():
     sm.combo_up(1000)  # stop
     assert sm.combo_down(2000) == Action.START
     assert sm.combo_up(3000) == Action.STOP
+
+
+def test_toggle_tap_starts_then_stops():
+    sm = make()
+    assert sm.toggle_tap(0) == Action.START
+    assert sm.recording is True
+    assert sm.locked is True  # hands-free while toggled on
+    assert sm.toggle_tap(1000) == Action.STOP
+    assert sm.recording is False
+
+
+def test_toggle_tap_cycle_repeats():
+    sm = make()
+    sm.toggle_tap(0)
+    sm.toggle_tap(1000)
+    assert sm.toggle_tap(2000) == Action.START
+    assert sm.toggle_tap(3000) == Action.STOP
+
+
+def test_escape_cancels_toggled_recording():
+    sm = make()
+    sm.toggle_tap(0)
+    assert sm.escape(500) == Action.CANCEL
+    assert sm.recording is False
+    assert sm.toggle_tap(1000) == Action.START

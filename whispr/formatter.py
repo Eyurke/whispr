@@ -18,6 +18,7 @@ class FormatOptions:
     capitalize_sentences: bool = True
     trailing_space: bool = True
     spoken_commands: bool = False
+    ensure_ending_punctuation: bool = False
     dictionary: tuple[str, ...] = ()
     replacements: dict[str, str] = field(default_factory=dict)
 
@@ -81,6 +82,9 @@ def format_text(text: str, opts: FormatOptions | None = None) -> str:
 
     if opts.capitalize_sentences:
         s = _capitalize(s)
+
+    if opts.ensure_ending_punctuation and s and s[-1].isalnum():
+        s += "."
 
     if opts.trailing_space and s:
         s += " "

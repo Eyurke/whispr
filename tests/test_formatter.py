@@ -99,3 +99,24 @@ def test_comma_inside_numbers_untouched():
 
 def test_empty_input_gives_empty_output():
     assert format_text("", opts(trailing_space=True)) == ""
+
+
+def test_ending_period_added_when_text_ends_bare():
+    assert format_text("hello world", opts(ensure_ending_punctuation=True)) == "Hello world."
+
+
+def test_ending_period_not_added_after_existing_punctuation():
+    assert format_text("are you there?", opts(ensure_ending_punctuation=True)) == "Are you there?"
+
+
+def test_ending_period_respects_trailing_space():
+    out = format_text("hello world", opts(ensure_ending_punctuation=True, trailing_space=True))
+    assert out == "Hello world. "
+
+
+def test_ending_period_disabled_leaves_text_bare():
+    assert format_text("hello world", opts()) == "Hello world"
+
+
+def test_ending_period_not_added_to_empty():
+    assert format_text("um", opts(ensure_ending_punctuation=True)) == ""

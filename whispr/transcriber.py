@@ -85,6 +85,7 @@ class Transcriber:
         audio,
         language: str | None = None,
         hotwords: str | None = None,
+        initial_prompt: str | None = None,
     ) -> TranscriptResult:
         """Transcribe float32 mono 16 kHz audio (numpy array) or a file path."""
         self.ensure_loaded()
@@ -96,6 +97,7 @@ class Transcriber:
             vad_filter=True,
             condition_on_previous_text=False,
             hotwords=hotwords or None,
+            initial_prompt=initial_prompt or None,
         )
         text = "".join(segment.text for segment in segments).strip()
         return TranscriptResult(text=text, language=info.language, duration_s=info.duration)

@@ -8,6 +8,7 @@ from pathlib import Path
 
 DEFAULTS: dict = {
     "hotkey": "ctrl+win",
+    "hotkey_mode": "hold",  # "hold" (release to finish) or "toggle" (tap/tap)
     "tap_lock_enabled": True,
     "tap_ms": 280,
     "model": "small",
@@ -21,6 +22,10 @@ DEFAULTS: dict = {
     "capitalize_sentences": True,
     "trailing_space": True,
     "spoken_commands": False,
+    "ensure_ending_punctuation": True,
+    # Biases Whisper toward punctuated output; clear it if you mostly
+    # dictate in a language other than English.
+    "initial_prompt": "Hello, welcome to my lecture.",
     "dictionary": [],
     "replacements": {},
     "sounds": True,
@@ -78,6 +83,7 @@ class Config:
             capitalize_sentences=self.capitalize_sentences,
             trailing_space=self.trailing_space,
             spoken_commands=self.spoken_commands,
+            ensure_ending_punctuation=self.ensure_ending_punctuation,
             dictionary=tuple(self.dictionary or ()),
             replacements=dict(self.replacements or {}),
         )

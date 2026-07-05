@@ -9,7 +9,8 @@
 ## Features
 
 - **Works in every app** — Slack, browsers, editors, terminals, email: text is inserted into whatever has focus, via fast clipboard-paste (clipboard is restored afterwards) or simulated typing.
-- **Push-to-talk + hands-free** — hold `Ctrl+Win` to talk; a quick tap locks recording so you can speak hands-free, tap again to finish. `Esc` cancels.
+- **Push-to-talk or toggle** — hold `Ctrl+Win` to talk (quick tap locks hands-free), or switch to toggle mode: tap a key (e.g. `Left Alt`) to start, tap again to finish. Alt+Tab-style chords never trigger it. `Esc` cancels.
+- **Real punctuation** — Whisper is prompt-biased toward punctuated output, and a final period is added when a dictation ends bare (both configurable).
 - **100% offline & private** — Whisper runs locally (CPU int8 or CUDA float16, picked automatically). No account, no cloud, no telemetry.
 - **Clean text out** — automatic punctuation and capitalization, filler-word removal (*um, uh, hmm*), smart spacing so consecutive dictations chain naturally.
 - **Personal dictionary** — names and jargon are passed to Whisper as hotwords and casing is enforced (e.g. `GitHub`, `Wispr Flow`).
@@ -42,10 +43,13 @@ Run it directly instead:
 
 | Action | How |
 |---|---|
-| Dictate | Hold `Ctrl+Win`, speak, release |
-| Hands-free mode | Tap `Ctrl+Win` quickly — recording locks; tap again to finish |
+| Dictate (hold mode) | Hold the hotkey, speak, release |
+| Dictate (toggle mode) | Tap the hotkey, speak, tap again |
+| Hands-free in hold mode | Quick-tap — recording locks; tap again to finish |
 | Cancel a recording | `Esc` |
 | Pause/resume, settings, history | Right-click the tray icon |
+
+Pick the hotkey and mode under **Settings… → Dictation** (e.g. `left alt` + *Tap to start, tap again to finish*).
 
 The overlay pill shows what's happening: **purple bars** = listening (bars follow your voice), **dots** = transcribing, **✓** = text inserted.
 

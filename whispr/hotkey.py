@@ -65,6 +65,18 @@ class PTTStateMachine:
             return Action.STOP
         return Action.NONE
 
+    def toggle_tap(self, t_ms: float) -> Action:
+        """Toggle mode: one clean tap starts hands-free recording, the
+        next one stops it. Used when the hotkey is e.g. a bare Left Alt."""
+        if self._state == _State.IDLE:
+            self._state = _State.LOCKED
+            self._t0 = t_ms
+            self._swallow_up = False
+            return Action.START
+        self._state = _State.IDLE
+        self._swallow_up = False
+        return Action.STOP
+
     def escape(self, t_ms: float) -> Action:
         if self._state == _State.PRESSED:
             self._state = _State.IDLE

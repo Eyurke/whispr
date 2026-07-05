@@ -67,7 +67,9 @@ class WhisprApp:
         self.transcriber = Transcriber(
             self.cfg.model, self.cfg.device, self.cfg.compute_type
         )
-        self.listener = HotkeyListener(self.cfg.hotkey, self.machine, self.on_action)
+        self.listener = HotkeyListener(
+            self.cfg.hotkey, self.machine, self.on_action, mode=self.cfg.hotkey_mode
+        )
         self.tray = Tray(
             on_toggle_pause=lambda: self.post("toggle_pause"),
             on_settings=lambda: self.post("open_settings"),
@@ -182,7 +184,10 @@ class WhisprApp:
         hotwords = ", ".join(self.cfg.dictionary) if self.cfg.dictionary else None
         started = time.monotonic()
         result = self.transcriber.transcribe(
-            audio, language=self.cfg.language, hotwords=hotwords
+            audio,
+            language=self.cfg.language,
+            hotwords=hotwords,
+            initial_prompt=self.cfg.initial_prompt,
         )
         text = format_text(result.text, self.cfg.format_options())
         log.info(
@@ -276,6 +281,7 @@ class WhisprApp:
         cfg.save()
 
         self.listener.set_combo(cfg.hotkey)
+        self.listener.set_mode(cfg.hotkey_mode)
         self.machine.tap_ms = cfg.tap_ms
         self.machine.lock_enabled = cfg.tap_lock_enabled
         self.recorder.device = cfg.mic_device
