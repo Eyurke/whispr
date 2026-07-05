@@ -25,7 +25,7 @@
 Requirements: Windows 10/11, Python 3.10–3.13, a microphone. (No GPU needed — a modern CPU transcribes a sentence in about a second; an NVIDIA GPU is used automatically if present.)
 
 ```powershell
-git clone https://github.com/YOURNAME/whispr.git
+git clone https://github.com/Eyurke/whispr.git
 cd whispr
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1
 ```
